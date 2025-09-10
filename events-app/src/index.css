@@ -1,0 +1,46 @@
+/* styling for nav menu */
+.app {
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ text-align: center;
+ flex-direction: column;
+ height: 100vh;
+ color: black; 
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #af6300;
+  color: #fff;
+  padding: 1.5rem;
+  border-radius: 5px;
+}
+
+.nav-links {
+  list-style-type: none;
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links :hover {
+  background-color: #0153d7;
+  border-radius: 5px;
+  padding: 0.5px;
+}
+
+.nav-links li {
+  margin-right: 1rem;
+}
+
+.nav-links a {
+  color: #fff;
+  text-decoration: none;
+}
+
+body {
+  background-color: #fff4e6;
+}
