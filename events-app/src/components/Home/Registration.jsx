@@ -1,10 +1,11 @@
 import { useFormik } from "formik";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useContext } from "react";
 import { AuthContext } from "../../AuthContext";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const validate = (values) => {
   const errors = {};
@@ -50,13 +51,24 @@ const validate = (values) => {
 
 const Registration = () => {
   const { loggedIn, setLoggedIn } = useContext(AuthContext);
+  let nav = useNavigate();
+  const isInitial = useRef(true);
 
   useEffect(() => {
     console.log("loggedIn changed:", loggedIn);
+
+    if (isInitial.current) {
+      isInitial.current = false;
+      return;
+    }
+
+    if (loggedIn) {
+      nav("/dashboard");
+    }
+
   }, [loggedIn]);
 
   const [registered, setRegistered] = useState(false);
-  // const [loggedIn, setLoggedIn] = useState(false)
 
   const formik = useFormik({
     initialValues: {
@@ -71,12 +83,9 @@ const Registration = () => {
       // submit handling code goes here
       console.log(values);
 
-      
       if (!registered) {
-        setRegistered(true)
-      } 
-      
-
+        setRegistered(true);
+      }
     },
   });
 
@@ -87,116 +96,116 @@ const Registration = () => {
         className="p-4 shadow rounded w-75 mx-auto"
       >
         {/* conditional rendering logic of register form */}
-      {registered ? (
-        <>
-          <h2>Thanks for registering! Click the login button to get started.</h2>
-          <Button 
-            type="button" 
-            className="w-50" 
-            onClick={() => {
-              console.log("hello");
-              setLoggedIn(true);
-              }
-            
-            }
+        {loggedIn ? null : registered ? (
+          <>
+            <h2>
+              Thanks for registering! Click the login button to get started.
+            </h2>
+            <Button
+              type="button"
+              className="w-50"
+              onClick={() => {
+                console.log("hello");
+                setLoggedIn(true);
+              }}
+            >
+              Login
+            </Button>
+          </>
+        ) : (
+          <>
+            {/*name*/}
+            <Form.Group className="mb-3">
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                type="text"
+                name="name"
+                maxLength={32}
+                value={formik.values.name}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                isInvalid={formik.touched.name && !!formik.errors.name}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formik.errors.name}
+              </Form.Control.Feedback>
+            </Form.Group>
 
-          >Login
-          </Button>
-        </>
-        
-      ) : ( 
-        <>
-          {/*name*/}
-        <Form.Group className="mb-3">
-          <Form.Label>Name</Form.Label>
-          <Form.Control
-            type="text"
-            name="name"
-            maxLength={32}
-            value={formik.values.name}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            isInvalid={formik.touched.name && !!formik.errors.name}
-          />
-          <Form.Control.Feedback type="invalid">
-            {formik.errors.name}
-          </Form.Control.Feedback>
-        </Form.Group>
+            {/* username */}
+            <Form.Group className="mb-3">
+              <Form.Label>Username</Form.Label>
+              <Form.Control
+                type="text"
+                name="username"
+                maxLength={32}
+                value={formik.values.username}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                isInvalid={formik.touched.username && !!formik.errors.username}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formik.errors.username}
+              </Form.Control.Feedback>
+            </Form.Group>
 
-        {/* username */}
-        <Form.Group className="mb-3">
-          <Form.Label>Username</Form.Label>
-          <Form.Control
-            type="text"
-            name="username"
-            maxLength={32}
-            value={formik.values.username}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            isInvalid={formik.touched.username && !!formik.errors.username}
-          />
-          <Form.Control.Feedback type="invalid">
-            {formik.errors.username}
-          </Form.Control.Feedback>
-        </Form.Group>
+            {/* email address */}
+            <Form.Group className="mb-3">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                name="email"
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                isInvalid={formik.touched.email && !!formik.errors.email}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formik.errors.email}
+              </Form.Control.Feedback>
+            </Form.Group>
 
-        {/* email address */}
-        <Form.Group className="mb-3">
-          <Form.Label>Email</Form.Label>
-          <Form.Control
-            type="email"
-            name="email"
-            value={formik.values.email}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            isInvalid={formik.touched.email && !!formik.errors.email}
-          />
-          <Form.Control.Feedback type="invalid">
-            {formik.errors.email}
-          </Form.Control.Feedback>
-        </Form.Group>
+            {/* password */}
+            <Form.Group className="mb-3">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="password"
+                name="password"
+                minLength={8}
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                isInvalid={formik.touched.password && !!formik.errors.password}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formik.errors.password}
+              </Form.Control.Feedback>
+            </Form.Group>
 
-        {/* password */}
-        <Form.Group className="mb-3">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            type="password"
-            name="password"
-            minLength={8}
-            value={formik.values.password}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            isInvalid={formik.touched.password && !!formik.errors.password}
-          />
-          <Form.Control.Feedback type="invalid">
-            {formik.errors.password}
-          </Form.Control.Feedback>
-        </Form.Group>
+            {/* confirm password */}
+            <Form.Group className="mb-3">
+              <Form.Label>Confirm password</Form.Label>
+              <Form.Control
+                type="password"
+                name="confirmPassword"
+                minLength={8}
+                value={formik.values.confirmPassword}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                isInvalid={
+                  formik.touched.confirmPassword &&
+                  !!formik.errors.confirmPassword
+                }
+              />
+              <Form.Control.Feedback type="invalid">
+                {formik.errors.confirmPassword}
+              </Form.Control.Feedback>
+            </Form.Group>
 
-        {/* confirm password */}
-        <Form.Group className="mb-3">
-          <Form.Label>Confirm password</Form.Label>
-          <Form.Control
-            type="password"
-            name="confirmPassword"
-            minLength={8}
-            value={formik.values.confirmPassword}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            isInvalid={
-              formik.touched.confirmPassword && !!formik.errors.confirmPassword
-            }
-          />
-          <Form.Control.Feedback type="invalid">
-            {formik.errors.confirmPassword}
-          </Form.Control.Feedback>
-        </Form.Group>
-
-        <Button type="submit" className="w-100">
-          Submit
-        </Button>
-        </>
-      )}
+            <Button type="submit" className="w-100">
+              Submit
+            </Button>
+          </>
+        )}
       </Form>
     </div>
   );
