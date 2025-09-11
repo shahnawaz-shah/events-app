@@ -26,9 +26,6 @@ export default function NavBar() {
                         Help
                         </Link>
                     </li>
-                    {/* <li>
-                        <button>Login</button> 
-                    </li> */}
                 </ul>
             </nav>
         </div>

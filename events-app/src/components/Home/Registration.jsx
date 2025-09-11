@@ -2,6 +2,9 @@ import { useFormik } from "formik";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { useState } from "react";
+import { useContext } from "react";
+import { AuthContext } from "../../AuthContext";
+import { useEffect } from "react";
 
 const validate = (values) => {
   const errors = {};
@@ -46,9 +49,14 @@ const validate = (values) => {
 };
 
 const Registration = () => {
+  const { loggedIn, setLoggedIn } = useContext(AuthContext);
+
+  useEffect(() => {
+    console.log("loggedIn changed:", loggedIn);
+  }, [loggedIn]);
 
   const [registered, setRegistered] = useState(false);
-  const [loggedIn, setLoggedIn] = useState(false)
+  // const [loggedIn, setLoggedIn] = useState(false)
 
   const formik = useFormik({
     initialValues: {
@@ -67,9 +75,7 @@ const Registration = () => {
       if (!registered) {
         setRegistered(true)
       } 
-      else {
-        setRegistered(false);
-      }
+      
 
     },
   });
@@ -83,8 +89,19 @@ const Registration = () => {
         {/* conditional rendering logic of register form */}
       {registered ? (
         <>
-          <h1>Thanks for registering! Click the login button to get started.</h1>
-          <Button type="button" className="w-50">Login</Button>
+          <h2>Thanks for registering! Click the login button to get started.</h2>
+          <Button 
+            type="button" 
+            className="w-50" 
+            onClick={() => {
+              console.log("hello");
+              setLoggedIn(true);
+              }
+            
+            }
+
+          >Login
+          </Button>
         </>
         
       ) : ( 

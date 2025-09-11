@@ -11,7 +11,8 @@ import Dashboard from './components/Dashboard/Dashboard.jsx';
 import ManageEvents from './components/ManageEvents/ManageEvents.jsx';
 import Help from './components/Help/Help.jsx';
 
-
+// import AuthContext for logged in status
+import { AuthProvider } from './AuthContext.jsx';
 
 // create a browser router that routes to each component
 const router = createBrowserRouter([
@@ -36,6 +37,8 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </StrictMode>,
 );
