@@ -8,7 +8,7 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from 'react-bootstrap/Card';
-import Modal from 'react-bootstrap/Modal';
+import { EventContext } from "../../EventContext";
 
 const validate = (values) => {
   const errors = {};
@@ -49,7 +49,7 @@ const validate = (values) => {
 
 export default function ManageEvents() {
     const { loggedIn } = useContext(AuthContext);
-    const [events, setEvents] = useState([]);
+    const { events, setEvents}  = useContext(EventContext)
     const [editingEventID, setEditingEventID] = useState(null);
 
     const formik = useFormik({
@@ -111,7 +111,7 @@ export default function ManageEvents() {
     return (
         <div>
             <NavBar />
-            <h1>Manage events page</h1><hr></hr>
+            <h1>Manage events</h1><hr></hr>
             { loggedIn ? (
                 <p>you are logged in✅ </p>
             ) : (

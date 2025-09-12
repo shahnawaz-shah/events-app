@@ -9,7 +9,7 @@ export default function Help() {
     return (
         <div>
             <NavBar />
-            <h1>Help page</h1><hr></hr>
+            <h1>Help</h1><hr></hr>
             { loggedIn ? (
                 <p>you are logged in</p>
             ) : (
