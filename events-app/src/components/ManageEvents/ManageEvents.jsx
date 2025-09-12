@@ -1,5 +1,5 @@
 import NavBar from "../../routes/NavBar";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../../AuthContext";
 import { useFormik } from "formik";
 import Form from "react-bootstrap/Form";
@@ -8,6 +8,7 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from 'react-bootstrap/Card';
+import Modal from 'react-bootstrap/Modal';
 
 const validate = (values) => {
   const errors = {};
@@ -49,6 +50,7 @@ const validate = (values) => {
 export default function ManageEvents() {
     const { loggedIn } = useContext(AuthContext);
     const [events, setEvents] = useState([]);
+    const [editingEventID, setEditingEventID] = useState(null);
 
     const formik = useFormik({
         initialValues: {
@@ -61,43 +63,69 @@ export default function ManageEvents() {
         validate,
         onSubmit: (values) => {
         // submit handling code goes here
-        
-        const newEvent = {
+
+        if (editingEventID) {
+            const updatedEvents = events.map(ev => 
+                ev.id === editingEventID ? { ...ev, ...values} : ev
+            );
+            setEvents(updatedEvents);
+            setEditingEventID(null);
+        } else {
+          const newEvent = {
             id: Date.now(),
             name: values.name,
             date: values.date,
             time: values.time,
             description: values.description,
             location: values.location,
-        }
+        };
 
         setEvents([...events, newEvent]);
-        console.log("Submitting form values with", values);
-
+        console.log("Submitting form values with", values);  
+        };
+        
         formik.resetForm();
         
         },
     });
 
+    useEffect(() => {
+        if (editingEventID) {
+            const eventToEdit = events.find(ev => ev.id === editingEventID);
+            if (eventToEdit) {
+                formik.setValues({
+                    name: eventToEdit.name,
+                    date: eventToEdit.date,
+                    time: eventToEdit.time,
+                    description: eventToEdit.description,
+                    location: eventToEdit.location,
+                })
+            }
+        }
+    }, [editingEventID, events]);
+
+    const handleDelete = (idToDelete) => {
+        setEvents(events.filter(ev => ev.id !== idToDelete));
+    };
 
     return (
         <div>
             <NavBar />
             <h1>Manage events page</h1><hr></hr>
             { loggedIn ? (
-                <p>you are logged in</p>
+                <p>you are logged in✅ </p>
             ) : (
-                <p>you are not logged in</p>
+                <p>you are not logged in❌</p>
             )}
             <hr></hr>
             <Container>
                 <Row>
                     <Col>
-                      <Form className="p-4 shadow rounded w-50 mx-auto" onSubmit={formik.handleSubmit}>
-                        <h3>Use the form below to add your events.</h3>
+                      <Form className="p-4 shadow rounded w-100 mx-auto" onSubmit={formik.handleSubmit}>
+                        <h4>Use the form below to add or edit your events.</h4>
                         {/*name*/}
                         <Form.Group className="mb-3">
-                            <Form.Label>Name</Form.Label>
+                            <Form.Label>Event name</Form.Label>
                             <Form.Control
                                 type="text"
                                 name="name"
@@ -176,7 +204,7 @@ export default function ManageEvents() {
                             </Form.Control.Feedback>
                         </Form.Group>
                         <Button type="submit" className="w-100">
-                        Add event
+                          {editingEventID ? "Save changes" : "Add event"}
                          </Button>
                       </Form>
                     </Col>
@@ -184,12 +212,14 @@ export default function ManageEvents() {
                 <Row>
                     <Col>
                       {events.map(event => (
-                       <Card>
+                       <Card className="p-4 shadow rounded w-100 mx-auto">
                         <Card.Body>
                             <Card.Title>{event.name}</Card.Title>
                             <Card.Text >{event.date} at {event.time}</Card.Text>
                             <Card.Text>{event.description}</Card.Text>
                             <Card.Text>{event.location}</Card.Text>
+                            <Button variant="primary" style={{margin: 10}} onClick={() => setEditingEventID(event.id)}>Edit event</Button>
+                            <Button variant="danger" onClick={() => handleDelete(event.id)}>Delete event</Button>
                         </Card.Body>
                       </Card>  
                       ))}
