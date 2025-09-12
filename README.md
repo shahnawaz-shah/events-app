@@ -7,7 +7,7 @@ A simple event scheduling and management app built with [React](https://react.de
 - View your scheduled events on a dashboard
 - Create, edit, and delete events
 - Simple authentication system (logged-in / logged-out state)
-- Responsive design using :contentReference[oaicite:2]{index=2} components
+- Responsive design
 
 ---
 
