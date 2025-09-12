@@ -50,6 +50,7 @@ const validate = (values) => {
 };
 
 const Registration = () => {
+  // get logged in status from context
   const { loggedIn, setLoggedIn } = useContext(AuthContext);
   let nav = useNavigate();
   const isInitial = useRef(true);
