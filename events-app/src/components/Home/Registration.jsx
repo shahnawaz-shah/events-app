@@ -53,7 +53,7 @@ const Registration = () => {
   const { loggedIn, setLoggedIn } = useContext(AuthContext);
   let nav = useNavigate();
   const isInitial = useRef(true);
-
+  // useEffect & useNavigate for initial load and nav to dashboard
   useEffect(() => {
     console.log("loggedIn changed:", loggedIn);
 
@@ -65,7 +65,6 @@ const Registration = () => {
     if (loggedIn) {
       nav("/dashboard");
     }
-
   }, [loggedIn]);
 
   const [registered, setRegistered] = useState(false);
