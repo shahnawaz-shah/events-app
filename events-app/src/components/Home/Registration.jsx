@@ -6,6 +6,7 @@ import { useContext } from "react";
 import { AuthContext } from "../../AuthContext";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Alert from "react-bootstrap/Alert";
 
 const validate = (values) => {
   const errors = {};
@@ -52,8 +53,11 @@ const validate = (values) => {
 const Registration = () => {
   // get logged in status from context
   const { loggedIn, setLoggedIn } = useContext(AuthContext);
+  const [loginError, setLoginError] = useState("");
+
   let nav = useNavigate();
   const isInitial = useRef(true);
+
   // useEffect & useNavigate for initial load and nav to dashboard
   useEffect(() => {
     console.log("loggedIn changed:", loggedIn);
@@ -80,8 +84,11 @@ const Registration = () => {
     },
     validate,
     onSubmit: (values) => {
-      // submit handling code goes here
+      // submit handling code for reg form
       console.log(values);
+
+      // set user info to local storage
+      localStorage.setItem("registeredUser", JSON.stringify(values));
 
       if (!registered) {
         setRegistered(true);
@@ -89,124 +96,202 @@ const Registration = () => {
     },
   });
 
+  const loginFormik = useFormik({
+    initialValues: {
+      username: "",
+      password: "",
+    },
+
+    onSubmit: (values) => {
+      // submit handle code for login form
+
+      // parse locale storage for user info
+      const storedUser = JSON.parse(localStorage.getItem("registeredUser"));
+
+      // check if a user exists
+      if (!storedUser) {
+        setLoginError("No registered user found.");
+        return;
+      }
+
+      // check if login form data matches local storage
+      if (
+        storedUser.username === values.username &&
+        storedUser.password === values.password
+      ) {
+        setLoggedIn(true);
+        nav("/dashboard");
+      } else {
+        setLoginError("Invalid username or password. Please try again.");
+      }
+    },
+  });
+
   return (
     <div className="login-form-container">
-      <Form
-        onSubmit={formik.handleSubmit}
-        className="p-4 shadow rounded w-75 mx-auto"
-      >
-        {/* conditional rendering logic of register form */}
-        {loggedIn ? null : registered ? (
-          <>
-            <h2>
-              Thanks for registering! Click the login button to get started.
-            </h2>
-            <Button
-              type="button"
-              className="w-50"
-              onClick={() => {
-                console.log("hello");
-                setLoggedIn(true);
-              }}
-            >
-              Login
-            </Button>
-          </>
-        ) : (
-          <>
-            {/*name*/}
-            <Form.Group className="mb-3">
-              <Form.Label>Name</Form.Label>
-              <Form.Control
-                type="text"
-                name="name"
-                maxLength={32}
-                value={formik.values.name}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                isInvalid={formik.touched.name && !!formik.errors.name}
-              />
-              <Form.Control.Feedback type="invalid">
-                {formik.errors.name}
-              </Form.Control.Feedback>
-            </Form.Group>
+      {!registered ? (
+        <Form
+          onSubmit={formik.handleSubmit}
+          className="p-4 shadow rounded w-75 mx-auto"
+        >
+          {/*name*/}
+          <Form.Group className="mb-3">
+            <Form.Label>Name</Form.Label>
+            <Form.Control
+              placeholder="e.g. John Smith"
+              type="text"
+              name="name"
+              maxLength={32}
+              value={formik.values.name}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              isInvalid={formik.touched.name && !!formik.errors.name}
+            />
+            <Form.Control.Feedback type="invalid">
+              {formik.errors.name}
+            </Form.Control.Feedback>
+          </Form.Group>
 
+          {/* username */}
+          <Form.Group className="mb-3">
+            <Form.Label>Username</Form.Label>
+            <Form.Control
+              placeholder="e.g. John2025"
+              type="text"
+              name="username"
+              maxLength={32}
+              value={formik.values.username}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              isInvalid={formik.touched.username && !!formik.errors.username}
+            />
+            <Form.Control.Feedback type="invalid">
+              {formik.errors.username}
+            </Form.Control.Feedback>
+          </Form.Group>
+
+          {/* email address */}
+          <Form.Group className="mb-3">
+            <Form.Label>Email</Form.Label>
+            <Form.Control
+              placeholder="e.g. john.s@gmail.com"
+              type="email"
+              name="email"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              isInvalid={formik.touched.email && !!formik.errors.email}
+            />
+            <Form.Control.Feedback type="invalid">
+              {formik.errors.email}
+            </Form.Control.Feedback>
+          </Form.Group>
+
+          {/* password */}
+          <Form.Group className="mb-3">
+            <Form.Label>Password</Form.Label>
+            <Form.Control
+              placeholder="Password"
+              type="password"
+              name="password"
+              minLength={8}
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              isInvalid={formik.touched.password && !!formik.errors.password}
+            />
+            <Form.Control.Feedback type="invalid">
+              {formik.errors.password}
+            </Form.Control.Feedback>
+          </Form.Group>
+
+          {/* confirm password */}
+          <Form.Group className="mb-3">
+            <Form.Label>Confirm password</Form.Label>
+            <Form.Control
+              placeholder="Confirm password"
+              type="password"
+              name="confirmPassword"
+              minLength={8}
+              value={formik.values.confirmPassword}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              isInvalid={
+                formik.touched.confirmPassword &&
+                !!formik.errors.confirmPassword
+              }
+            />
+            <Form.Control.Feedback type="invalid">
+              {formik.errors.confirmPassword}
+            </Form.Control.Feedback>
+          </Form.Group>
+
+          <Button type="submit" className="w-100">
+            Submit
+          </Button>
+        </Form>
+      ) : (
+        // log in form
+        <Form
+          onSubmit={loginFormik.handleSubmit}
+          className="p-4 shadow rounded w-75 mx-auto"
+        >
+          <>
+            <h2>Login</h2>
+            {loginError && (
+              <Alert
+                variant="danger"
+                onClose={() => setLoginError("")}
+                dismissible
+              >
+                {loginError}
+              </Alert>
+            )}
             {/* username */}
             <Form.Group className="mb-3">
               <Form.Label>Username</Form.Label>
               <Form.Control
+                placeholder="e.g. John2025"
                 type="text"
                 name="username"
                 maxLength={32}
-                value={formik.values.username}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                isInvalid={formik.touched.username && !!formik.errors.username}
+                value={loginFormik.values.username}
+                onChange={loginFormik.handleChange}
+                onBlur={loginFormik.handleBlur}
+                isInvalid={
+                  loginFormik.touched.username && !!loginFormik.errors.username
+                }
               />
               <Form.Control.Feedback type="invalid">
-                {formik.errors.username}
+                {loginFormik.errors.username}
               </Form.Control.Feedback>
             </Form.Group>
-
-            {/* email address */}
-            <Form.Group className="mb-3">
-              <Form.Label>Email</Form.Label>
-              <Form.Control
-                type="email"
-                name="email"
-                value={formik.values.email}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                isInvalid={formik.touched.email && !!formik.errors.email}
-              />
-              <Form.Control.Feedback type="invalid">
-                {formik.errors.email}
-              </Form.Control.Feedback>
-            </Form.Group>
-
             {/* password */}
             <Form.Group className="mb-3">
               <Form.Label>Password</Form.Label>
               <Form.Control
+                placeholder="Password"
                 type="password"
                 name="password"
                 minLength={8}
-                value={formik.values.password}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                isInvalid={formik.touched.password && !!formik.errors.password}
-              />
-              <Form.Control.Feedback type="invalid">
-                {formik.errors.password}
-              </Form.Control.Feedback>
-            </Form.Group>
-
-            {/* confirm password */}
-            <Form.Group className="mb-3">
-              <Form.Label>Confirm password</Form.Label>
-              <Form.Control
-                type="password"
-                name="confirmPassword"
-                minLength={8}
-                value={formik.values.confirmPassword}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
+                value={loginFormik.values.password}
+                onChange={loginFormik.handleChange}
+                onBlur={loginFormik.handleBlur}
                 isInvalid={
-                  formik.touched.confirmPassword &&
-                  !!formik.errors.confirmPassword
+                  loginFormik.touched.password && !!loginFormik.errors.password
                 }
               />
               <Form.Control.Feedback type="invalid">
-                {formik.errors.confirmPassword}
+                {loginFormik.errors.password}
               </Form.Control.Feedback>
             </Form.Group>
 
-            <Button type="submit" className="w-100">
-              Submit
+            <Button type="submit" className="w-50">
+              Login
             </Button>
           </>
-        )}
-      </Form>
+        </Form>
+      )}
     </div>
   );
 };
