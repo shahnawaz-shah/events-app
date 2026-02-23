@@ -61,8 +61,8 @@ export default function Help() {
             <h4>Step 6</h4>
             <p>You're all done! Here are some tips for managing your events:</p>
             <ul style={{ textAlign: "left", display: "inline-block" }}>
-              <li>Always check the dates and times carefully.</li>
-              <li>Add as much detail as you can in the description.</li>
+              <li>Always check the dates and times carefully!</li>
+              <li>Add as much detail as you can in the description!</li>
               <li>
                 If things change, don't panic. Just edit the details and watch
                 them update on your dashboard.
